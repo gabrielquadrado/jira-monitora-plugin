@@ -1,18 +1,30 @@
 var issues = [];
 var restURLs = [];
 var row = document.getElementById("tableIssues").insertRow(0);
-var userAndPassword = "os_username=admin&os_password=gafiqua123";
-$(document).ready(function(){
-  $.getJSON('https://gabrielquadrado.atlassian.net/rest/api/latest/search?fields=id&'+userAndPassword, function(allIssueId){
-    //$.getJSON('https://gabrielquadrado.atlassian.net/rest/api/latest/search?fields=id&os_authType=basic', function(allIssueId){
-    console.log(allIssueId);
-    var i;
-    for(i=0; i<allIssueId.issues.length; i++){
-      restURLs[i] = "https://gabrielquadrado.atlassian.net/rest/api/latest/issue/"+allIssueId.issues[i].id+"?"+userAndPassword;
-    }
-    next();
+var userAndPassword = "os_username=admin&os_password=atlassian123";
+
+$("#dropProjetos").change(function(){
+  arrayReset();
+  var selected = $("#dropProjetos").val();
+  $(document).ready(function(){
+    if(selected=='all')
+      var url = 'https://gabrielquadrado.atlassian.net/rest/api/latest/search?fields=id&'+userAndPassword
+    else
+      var url = 'https://gabrielquadrado.atlassian.net/rest/api/latest/search?fields=id&jql=project='+selected+'&'+userAndPassword
+    $.getJSON(url, function(allIssueId){
+      var i;
+      for(i=0; i<allIssueId.issues.length; i++){
+        restURLs[i] = "https://gabrielquadrado.atlassian.net/rest/api/latest/issue/"+allIssueId.issues[i].id+"?"+userAndPassword;
+      }
+      next();
+    });
   });
 });
+
+function arrayReset(){
+  issues = [];
+  restURLs = [];
+}
 
 function resquest(url){
   $.getJSON(url,function(data){
@@ -24,13 +36,13 @@ function resquest(url){
 function next(){
   var url = restURLs.shift();
   if(!url) {
-    console.log(issues); 
     createTable();
   }
   resquest(url);
 }
 
 function createTable(){
+  $("#tableIssues").empty();
   var i;
   for(i=0; i<issues.length; i++){
     row = document.getElementById("tableIssues").insertRow(0);

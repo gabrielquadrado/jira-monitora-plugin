@@ -2,16 +2,13 @@
     "name": "MonitoraTec - Lista de issues",
     "description": "Exibe em uma lista todas as issues",
     "key": "listar-issues",
-    "baseUrl": "https://bf182fe0.ngrok.io/atlastutorial/listarIssues/",
+    "baseUrl": "https://7ceba6b5.ngrok.io/atlastutorial/listarIssues/",
     "vendor": {
         "name": "Gabriel Quadrado",
         "url": "https://www.fb.com/gabrielfquadrado"
     },
     "authentication": {
-        "type": "jwt"
-    },
-    "lifecycle": {
-       "installed": "/installed"
+        "type": "none"
     },
     "apiVersion": 1,
     "modules": {
