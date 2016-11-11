@@ -1,22 +1,31 @@
 var issues = [];
-var restURLs = [];
 var row = document.getElementById("tableIssues").insertRow(0);
 var userAndPassword = "os_username=&os_password=";
 
 $("#dropProjetos").change(function(){
+  var i;
   arrayReset();
   var selected = $("#dropProjetos").val();
   $(document).ready(function(){
     if(selected=='all')
-      var url = 'https://gabrielquadrado.atlassian.net/rest/api/latest/search?fields=id&'+userAndPassword
+      var url = 'https://gabrielquadrado.atlassian.net/rest/api/latest/search?fields=id&'+userAndPassword;
     else
-      var url = 'https://gabrielquadrado.atlassian.net/rest/api/latest/search?fields=id&jql=project='+selected+'&'+userAndPassword
-    $.getJSON(url, function(allIssueId){
-      var i;
-      for(i=0; i<allIssueId.issues.length; i++){
-        restURLs[i] = "https://gabrielquadrado.atlassian.net/rest/api/latest/issue/"+allIssueId.issues[i].id+"?"+userAndPassword;
-      }
-      next();
+      var url = 'https://gabrielquadrado.atlassian.net/rest/api/latest/search?fields=id&jql=project='+selected+'&'+userAndPassword;
+    $.getJSON(url, function(ids){
+      var total = ids.total;
+      if(selected=='all')
+        var url = "https://gabrielquadrado.atlassian.net/rest/api/latest/search?"+userAndPassword+"&maxResults="+total+
+        "&fields=id, key, issuetype, summary, description, status";
+      else
+        var url = "https://gabrielquadrado.atlassian.net/rest/api/latest/search?"+userAndPassword+"&maxResults="+total+
+        "&fields=id, key, issuetype, summary, description, status"+"&jql=project="+selected;
+        $.getJSON(url, function(data){
+            for(i=0; i<total; i++){
+              issues[i]=data.issues[i];
+            }
+            createTable();
+            console.log(data);
+          });
     });
   });
 });
@@ -24,22 +33,6 @@ $("#dropProjetos").change(function(){
 function arrayReset(){
   issues = [];
   restURLs = [];
-}
-
-function resquest(url){
-  $.getJSON(url,function(data){
-  	console.log(data.id);
-    issues.push(data);
-    setTimeout(next,1);
-  })
-}
-
-function next(){
-  var url = restURLs.shift();
-  if(!url) {
-    createTable();
-  }
-  resquest(url);
 }
 
 function createTable(){
